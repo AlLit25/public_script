@@ -20,8 +20,9 @@ class Main {
         fetch(`template/${nameTemplate}.html`)
             .then(response => response.text())
             .then(data => {
+                console.log(data);
                 parent.insertAdjacentHTML('afterbegin', data);
             })
-            .catch(error => console.error('Error loading header:', error));
+            .catch(error => console.error('Error loading template:', error));
     }
 }
