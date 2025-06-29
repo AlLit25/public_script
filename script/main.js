@@ -8,8 +8,13 @@ class Main {
 
         if (Main.isset(this.main)) {
             Main.connectTemplate(this.main, 'home');
+            this.main.addEventListener('click', event => this.clickHandler(event.target));
         }
 
+    }
+
+    clickHandler(elem) {
+        console.log(elem);
     }
 
     static isset(elem) {

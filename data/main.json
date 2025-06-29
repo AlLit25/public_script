@@ -1,0 +1,16 @@
+{
+    "income": {
+        "default": ""
+    },
+    "expense": {
+        "product": "Продукти",
+        "cafe": "Кафе",
+        "utilities": "Комуналні платежі",
+        "pharmacy": "Аптека",
+        "eva_makeup": "Eva/Makeup",
+        "rztk": "ROZETKA",
+        "pet": "Зоотовари",
+        "clothing": "Одяг",
+        "other": "Інше"
+    }
+}
