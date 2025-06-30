@@ -34,8 +34,7 @@ class Main {
         fetch(`template/${nameTemplate}.html`)
             .then(response => response.text())
             .then(data => {
-                console.log(data);
-                parent.insertAdjacentHTML('afterbegin', data);
+                parent.innerHTML = data;
             })
             .catch(error => console.error('Error loading template:', error));
     }
