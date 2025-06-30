@@ -14,7 +14,16 @@ class Main {
     }
 
     clickHandler(elem) {
-        console.log(elem);
+        if (elem.hasAttribute('data-mf-click')) {
+            switch (elem.dataset.mfClick) {
+                case 'home':
+                    Main.connectTemplate(this.main, 'home');
+                    break;
+                case 'income':
+                    Main.connectTemplate(this.main, 'income');
+                    break;
+            }
+        }
     }
 
     static isset(elem) {
