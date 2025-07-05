@@ -8,6 +8,7 @@
               rel="stylesheet"
               integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr"
               crossorigin="anonymous">
+        <link rel="stylesheet" href="style/main.css">
         <title>myfin</title>
     </head>
     <body>
@@ -16,7 +17,62 @@
                 <h1>мафін</h1>
             </div>
         </header>
-        <main></main>
+        <main class="container">
+            <div class="pt-5" data-mf-block="menu">
+                <div class="text-center pt-3">
+                    <button class="btn btn-primary btn-lg" data-mf-click="income">Дохід</button>
+                </div>
+                <div class="text-center pt-3">
+                    <button class="btn btn-primary btn-lg" data-mf-click="expense">Витрати</button>
+                </div>
+                <div class="text-center pt-3">
+                    <button class="btn btn-primary btn-lg" data-mf-click="statistic">Статистика</button>
+                </div>
+            </div>
+            <div class="pt-5 hide" data-mf-block="income">
+                <div class="text-center pt-2">
+                    <button class="btn btn-secondary btn-lg" data-mf-click="menu">Головна</button>
+                </div>
+                <div class="text-center pt-2">
+                    <label class="col-6">
+                        <input type="number" class="form-control" data-mf-input="income"/>
+                    </label>
+                </div>
+                <div class="text-center pt-2">
+                    <button type="button" class="btn btn-success btn-lg" data-mf-click="add_income">Додати</button>
+                </div>
+            </div>
+            <div class="pt-5 hide" data-mf-block="expense">
+                <div class="text-center pt-2">
+                    <button class="btn btn-secondary btn-lg" data-mf-click="menu">Головна</button>
+                </div>
+                <div class="text-center pt-2">
+                    <label class="col-6">
+                        <select class="form-select" data-mf-input="expense_category">
+                            <option value="">Обрати</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="text-center pt-2">
+                    <label class="col-6">
+                        <input type="number" class="form-control" data-mf-input="expense_sum"/>
+                    </label>
+                </div>
+                <div class="text-center pt-2">
+                    <label class="col-6">
+                        <textarea class="form-control" data-mf-input="expense_comment"></textarea>
+                    </label>
+                </div>
+                <div class="text-center pt-2">
+                    <button type="button" class="btn btn-success btn-lg" data-mf-click="expense_add">Додати</button>
+                </div>
+            </div>
+            <div class="pt-5 hide" data-mf-block="statistic">
+                <div class="text-center pt-2">
+                    <button class="btn btn-secondary btn-lg" data-mf-click="menu">Головна</button>
+                </div>
+            </div>
+        </main>
         <footer></footer>
         <script src="script/main.js"></script>
     </body>
