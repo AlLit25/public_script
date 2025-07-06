@@ -71,6 +71,58 @@
                 <div class="text-center pt-2">
                     <button class="btn btn-secondary btn-lg" data-mf-click="menu">Головна</button>
                 </div>
+                <div>
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <span class="nav-link active" data-mf-click="s_today">Сьогодні</span>
+                        </li>
+                        <li class="nav-item">
+                            <span class="nav-link" data-mf-click="s_week">Тиждень</span>
+                        </li>
+                        <li class="nav-item">
+                            <span class="nav-link" data-mf-click="s_month">Місяць</span>
+                        </li>
+                        <li class="nav-item">
+                            <span class="nav-link" data-mf-click="s_date">Дата</span>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <div data-mfs-block="s_today_date"></div>
+                    <div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <td class="table-success">Дохід</td>
+                                </tr>
+                            </thead>
+                            <tbody data-mf-block="table_income">
+                                <tr>
+                                    <td>Завантаження...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <td colspan="3" class="table-danger">Витрати</td>
+                                </tr>
+                                <tr>
+                                    <td>Сума</td>
+                                    <td>Категорія</td>
+                                    <td>Коментар</td>
+                                </tr>
+                            </thead>
+                            <tbody data-mf-block="table_expense">
+                                <tr>
+                                    <td colspan="3">Завантаження...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </main>
         <footer></footer>
