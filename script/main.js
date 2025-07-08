@@ -129,13 +129,16 @@ class Main {
         }
 
         this.getRecords(where).then(result => {
-            if (result.length > 0) {
-                const data = Main.groupData(result);
-                const incomeTable = this.main.querySelector('tbody[data-mf-block="table_income"]');
-                const expenseTable = this.main.querySelector('tbody[data-mf-block="table_expense"]');
+            const data = Main.groupData(result);
+            const incomeTable = this.main.querySelector('tbody[data-mf-block="table_income"]');
+            const expenseTable = this.main.querySelector('tbody[data-mf-block="table_expense"]');
 
+            if (result.length > 0) {
                 incomeTable.innerHTML = Template.getStatisticIncome(data.income);
                 expenseTable.innerHTML = Template.getStatisticExpense(data.expense);
+            } else {
+                incomeTable.innerHTML = '<tr><td>Дані відсутні</td></tr>';
+                expenseTable.innerHTML = '<tr><td colspan="3">Дані відсутні</td></tr>';
             }
         });
     }
