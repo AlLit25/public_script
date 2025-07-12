@@ -9,6 +9,7 @@
               integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr"
               crossorigin="anonymous">
         <link rel="stylesheet" href="style/main.css">
+        <link rel="icon" type="image/x-icon" href="favicon.ico">
         <title>myfin</title>
     </head>
     <body>
@@ -72,7 +73,7 @@
                     <button class="btn btn-secondary btn-lg" data-mf-click="menu">Головна</button>
                 </div>
                 <div>
-                    <ul class="nav nav-tabs">
+                    <ul class="nav nav-tabs" data-mfs-block="s_tabs_list">
                         <li class="nav-item">
                             <span class="nav-link active" data-mf-click="s_today">Сьогодні</span>
                         </li>
@@ -87,7 +88,7 @@
                         </li>
                     </ul>
                 </div>
-                <div>
+                <div data-mfs-block="s_today">
                     <div data-mfs-block="s_today_date"></div>
                     <div>
                         <table class="table">
@@ -123,6 +124,61 @@
                         </table>
                     </div>
                 </div>
+                <div data-mfs-block="s_week" class="hide">
+                    <div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <td class="table-success">Дохід</td>
+                                </tr>
+                            </thead>
+                            <tbody data-mf-block="table_income">
+                                <tr>
+                                    <td>Завантаження...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <td colspan="3" class="table-danger">Витрати</td>
+                                </tr>
+                                <tr>
+                                    <td>Сума</td>
+                                    <td>Категорія</td>
+                                    <td>Коментар</td>
+                                </tr>
+                            </thead>
+                            <tbody data-mf-block="table_expense">
+                                <tr>
+                                    <td colspan="3">Завантаження...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <td colspan="3" class="table-warning">Витрати за категоріями</td>
+                                </tr>
+                                <tr>
+                                    <td>Сума</td>
+                                    <td>Категорія</td>
+                                </tr>
+                            </thead>
+                            <tbody data-mf-block="table_expense_total">
+                                <tr>
+                                    <td colspan="2">Завантаження...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div data-mfs-block="s_month" class="hide">Місяць</div>
+                <div data-mfs-block="s_date" class="hide">Дата</div>
             </div>
         </main>
         <footer></footer>

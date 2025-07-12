@@ -1,11 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
-    new Main()
+    new Main();
 });
 
 class Main {
     constructor() {
         this.main = document.querySelector('main');
         this.blockList = {};
+        this.sphObj = new SPH();
 
         if (Main.isset(this.main)) {
             this.main.addEventListener('click', event => this.clickHandler(event.target));
@@ -16,22 +17,32 @@ class Main {
 
     clickHandler(elem) {
         if (elem.hasAttribute('data-mf-click')) {
+            let nextCheck = true;
+
             switch (elem.dataset.mfClick) {
                 case 'menu':
                 case 'expense':
                 case 'income':
                     this.activeBlock(elem.dataset.mfClick);
+                    nextCheck = false;
                     break;
                 case 'add_income':
                     this.addIncome();
+                    nextCheck = false;
                     break;
                 case 'expense_add':
                     this.addExpense();
+                    nextCheck = false;
                     break;
                 case 'statistic':
                     this.activeBlock(elem.dataset.mfClick);
                     this.getStatistic();
+                    nextCheck = false;
                     break;
+            }
+
+            if (nextCheck) {
+                this.sphObj.clickHandler(elem, this);
             }
         }
     }
@@ -66,6 +77,10 @@ class Main {
         }
     }
 
+    /**
+     * @param elem
+     * @return boolean
+     */
     static isset(elem) {
         return elem !== null && elem !== undefined;
     }
@@ -130,26 +145,23 @@ class Main {
 
         this.getRecords(where).then(result => {
             const data = Main.groupData(result);
-            const incomeTable = this.main.querySelector('tbody[data-mf-block="table_income"]');
-            const expenseTable = this.main.querySelector('tbody[data-mf-block="table_expense"]');
-
-            if (result.length > 0) {
-                incomeTable.innerHTML = Template.getStatisticIncome(data.income);
-                expenseTable.innerHTML = Template.getStatisticExpense(data.expense);
-            } else {
-                incomeTable.innerHTML = '<tr><td>Дані відсутні</td></tr>';
-                expenseTable.innerHTML = '<tr><td colspan="3">Дані відсутні</td></tr>';
+            switch (tab) {
+                case 's_today':
+                    this.sphObj.activeToday(result, data);
+                    break;
+                case 's_week':
+                    this.sphObj.activeWeek(result, data);
+                    break;
+                case 's_month':
+                    this.sphObj.activeWeek(result, data);
+                    break;
             }
         });
     }
 
     setToday() {
         const todayBlock = this.main.querySelector('div[data-mfs-block="s_today_date"]');
-        const date = new Date();
-        const dateDay = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
-        const dateMonth = date.getMonth() < 10 ? "0" + date.getMonth() : date.getMonth();
-
-        todayBlock.innerHTML = `<b>${dateDay}.${dateMonth}.${date.getFullYear()}</b>`;
+        todayBlock.innerHTML = DateWorker.getDateTableFormat(new Date());
     }
 
     static groupData(dataRaw) {
@@ -234,21 +246,144 @@ class Main {
     }
 }
 
+/**
+ * StatisticPageHandler
+ */
+class SPH {
+    static sBlock = document.querySelector('div[data-mf-block="statistic"]');
+
+    constructor() {
+        this.mf_s = SPH.sBlock;
+
+        if (Main.isset(this.mf_s)) {
+            this.initTabs();
+        }
+    }
+
+    clickHandler(elem, mObj) {
+        switch (elem.dataset['mfClick']) {
+            case 's_today':
+                this.activeTab(elem.dataset['mfClick']);
+                mObj.getStatistic(elem.dataset['mfClick']);
+                break;
+            case 's_week':
+                this.activeTab(elem.dataset['mfClick']);
+                mObj.getStatistic(elem.dataset['mfClick']);
+                break;
+            case 's_month':
+                this.activeTab(elem.dataset['mfClick']);
+                mObj.getStatistic(elem.dataset['mfClick']);
+                break;
+            case 's_date':
+                this.activeTab(elem.dataset['mfClick']);
+                mObj.getStatistic(elem.dataset['mfClick']);
+                break;
+        }
+    }
+
+    activeTab(activeTab) {
+        for (const tabCode in this.tabsList) {
+            if (tabCode === activeTab) {
+                if (this.tabsList[tabCode].classList.contains('hide')) this.tabsList[tabCode].classList.remove('hide');
+            } else {
+                this.tabsList[tabCode].classList.add('hide');
+            }
+        }
+
+        this.tabsMenu.forEach(elem => {
+            if (elem.dataset['mfClick'] === activeTab) {
+                elem.classList.add('active');
+            } else {
+                if (elem.classList.contains('active')) elem.classList.remove('active');
+            }
+        });
+    }
+
+    initTabs() {
+        this.tabToday = this.mf_s.querySelector('div[data-mfs-block="s_today"]');
+        this.tabWeek = this.mf_s.querySelector('div[data-mfs-block="s_week"]');
+        this.tabMonth = this.mf_s.querySelector('div[data-mfs-block="s_month"]');
+        this.tabDate = this.mf_s.querySelector('div[data-mfs-block="s_date"]');
+
+        const tabsListMenu = this.mf_s.querySelector('ul[data-mfs-block="s_tabs_list"]');
+        this.tabsMenu = tabsListMenu.querySelectorAll('span[data-mf-click]');
+
+        this.tabsList = {
+            's_today': this.tabToday,
+            's_week': this.tabWeek,
+            's_month': this.tabMonth,
+            's_date': this.tabDate,
+        };
+    }
+
+    activeToday(result, data) {
+        const incomeTable = this.tabToday.querySelector('tbody[data-mf-block="table_income"]');
+        const expenseTable = this.tabToday.querySelector('tbody[data-mf-block="table_expense"]');
+
+        if (result.length > 0) {
+            incomeTable.innerHTML = Template.getStatisticIncome(data.income);
+            expenseTable.innerHTML = Template.getStatisticExpense(data.expense);
+        } else {
+            incomeTable.innerHTML = '<tr><td>Дані відсутні</td></tr>';
+            expenseTable.innerHTML = '<tr><td colspan="3">Дані відсутні</td></tr>';
+        }
+    }
+
+    activeWeek(result, data) {
+        const incomeTable = this.tabWeek.querySelector('tbody[data-mf-block="table_income"]');
+        const expenseTable = this.tabWeek.querySelector('tbody[data-mf-block="table_expense"]');
+        const expenseTotalTable = this.tabWeek.querySelector('tbody[data-mf-block="table_expense_total"]');
+
+        if (result.length > 0) {
+            incomeTable.innerHTML = Template.getStatisticIncomeWeek(data.income);
+            expenseTable.innerHTML = Template.getStatisticExpenseWeek(data.expense, expenseTotalTable);
+        } else {
+            incomeTable.innerHTML = '<tr><td>Дані відсутні</td></tr>';
+            expenseTable.innerHTML = '<tr><td colspan="3">Дані відсутні</td></tr>';
+        }
+    }
+
+    activeMonth(result, data) {
+
+        console.log(result, data);
+    }
+}
+
 class Template {
     static getStatisticIncome(data) {
         let html = '';
+        let sum = 0;
 
         for (const date in data) {
             for (const elem of data[date]) {
                 html += `<tr><td>${elem.sum}</td></tr>`;
+                sum += elem.sum;
             }
         }
+        html += `<tr><td>Загалом: <b>${sum}</b></td></tr>`;
+
+        return html;
+    }
+
+    static getStatisticIncomeWeek(data) {
+        let html = '';
+        let sum = 0;
+
+        for (const date in data) {
+            html += `<tr><td>${DateWorker.getDateTableFormat(new Date(date))}</td></tr>`;
+            for (const elem of data[date]) {
+                html += `<tr><td>${elem.sum}</td></tr>`;
+                sum += elem.sum;
+            }
+        }
+        html += `<tr><td>Загалом: <b>${sum}</b></td></tr>`;
 
         return html;
     }
 
     static getStatisticExpense(data) {
         let html = '';
+        let sum = 0;
 
         for (const date in data) {
             for (const elem of data[date]) {
@@ -258,10 +393,49 @@ class Template {
                         <td>${Dictionary.expenseCategory[elem.category]}</td>
                         <td>${elem.comment || ''}</td>
                     </tr>`;
+                sum += elem.sum;
             }
         }
+        html += `<tr><td>Загалом: <b>${sum}</b></td></tr>`;
 
         return html;
+    }
+
+    static getStatisticExpenseWeek(data, categoryTable) {
+        let html = '';
+        let sum = 0;
+        const categorySum = {};
+
+        for (const date in data) {
+            html += `<tr><td>${DateWorker.getDateTableFormat(new Date(date))}</td></tr>`;
+            for (const elem of data[date]) {
+                html +=
+                    `<tr>
+                        <td>${elem.sum}</td>
+                        <td>${Dictionary.expenseCategory[elem.category]}</td>
+                        <td>${elem.comment || ''}</td>
+                    </tr>`;
+                sum += elem.sum;
+                if (categorySum[elem.category] > 0) {
+                    categorySum[elem.category] += elem.sum;
+                } else {
+                    categorySum[elem.category] = elem.sum;
+                }
+            }
+        }
+        html += `<tr><td>Загалом: <b>${sum}</b></td></tr>`;
+        Template.setDataToExpenseWeekTotalTable(categorySum, categoryTable)
+        return html;
+    }
+
+    static setDataToExpenseWeekTotalTable(data, table) {
+        let html = '';
+        
+        for (const category in data) {
+            html += `<tr><td>${data[category]}</td><td>${Dictionary.expenseCategory[category]}</td></tr>`;
+        }
+
+        table.innerHTML = html;
     }
 }
 
@@ -293,6 +467,13 @@ class DateWorker {
         const start = new Date(today.getFullYear(), today.getMonth(), 1, 0, 0, 0, 0);
         const end = new Date(today.getFullYear(), today.getMonth() + 1, 0, 23, 59, 59, 999);
         return {start: DateWorker.formatDate(start.toISOString()), end: DateWorker.formatDate(end.toISOString())};
+    }
+
+    static getDateTableFormat(date) {
+        const dateDay = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+        const dateMonth = date.getMonth() < 10 ? "0" + date.getMonth() : date.getMonth();
+
+        return `<b>${dateDay}.${dateMonth}.${date.getFullYear()}</b>`;
     }
 }
 
