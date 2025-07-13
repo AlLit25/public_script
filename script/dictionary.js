@@ -17,6 +17,7 @@ class Dictionary {
     };
 
     static supabaseUrl = 'https://vntunuzrneoakdckqjvk.supabase.co/rest/v1/fin_statistic';
+    static supabaseAuth = 'https://vntunuzrneoakdckqjvk.supabase.co';
 
     static supabaseToken = {
         'Content-Type': 'application/json',

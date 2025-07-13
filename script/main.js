@@ -20,6 +20,9 @@ class Main {
             let nextCheck = true;
 
             switch (elem.dataset.mfClick) {
+                case 'auth':
+                    this.auth();
+                    break;
                 case 'menu':
                 case 'expense':
                 case 'income':
@@ -85,6 +88,45 @@ class Main {
         return elem !== null && elem !== undefined;
     }
 
+    auth() {
+        const login = this.main.querySelector('input[data-mf-input="login"]');
+        const pass = this.main.querySelector('input[data-mf-input="pass"]');
+
+        console.log(login.value);
+        console.log(pass.value);
+        this.signIn(login.value, pass.value).then(loginData => {
+            console.log(loginData);
+            // сохранить значения в куки
+        })
+    }
+
+    async signIn(email, password) {
+        try {
+            const response = await fetch(`${Dictionary.supabaseAuth}/auth/v1/token?grant_type=password`, {
+                method: 'POST',
+                headers: Dictionary.supabaseToken,
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                console.error('Помилка під час входу');
+            }
+
+            return {
+                user: data.user,
+                session: data
+            };
+        } catch (error) {
+            console.error('помилка входу:', error.message);
+            return null;
+        }
+    }
+
     addIncome() {
         const incomeBlock = this.main.querySelector('div[data-mf-block="income"]');
         const sumInput = incomeBlock.querySelector('input[data-mf-input="income"]');
@@ -119,7 +161,6 @@ class Main {
         } else {
             alert('Обовʼязково необхідно вказати суму та категорію');
         }
-
     }
 
     getStatistic(tab = 's_today') {
