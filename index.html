@@ -19,7 +19,15 @@
             </div>
         </header>
         <main class="container">
-            <div class="pt-5">
+            <div class="pt-5 text-center" data-mf-block="load">
+                <div class="spinner-border text-success" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div>
+                    <p>Завантаження...</p>
+                </div>
+            </div>
+            <div class="pt-5 hide" data-mf-block="auth">
                 <div class="text-center pt-2">
                     <label class="col-6">
                         <input type="email" class="form-control" placeholder="Логін" data-mf-input="login"/>

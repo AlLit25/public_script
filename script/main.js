@@ -9,9 +9,19 @@ class Main {
         this.sphObj = new SPH();
 
         if (Main.isset(this.main)) {
-            this.main.addEventListener('click', event => this.clickHandler(event.target));
             this.getBlockList();
+            this.main.addEventListener('click', event => this.clickHandler(event.target));
             this.setCategory();
+
+            this.firstScreen();
+        }
+    }
+
+    firstScreen() {
+        if (!this.isTokenExpired()) {
+            this.activeBlock('menu');
+        } else {
+            this.activeBlock('auth');
         }
     }
 
@@ -80,10 +90,6 @@ class Main {
         }
     }
 
-    /**
-     * @param elem
-     * @return boolean
-     */
     static isset(elem) {
         return elem !== null && elem !== undefined;
     }
@@ -92,12 +98,75 @@ class Main {
         const login = this.main.querySelector('input[data-mf-input="login"]');
         const pass = this.main.querySelector('input[data-mf-input="pass"]');
 
-        console.log(login.value);
-        console.log(pass.value);
         this.signIn(login.value, pass.value).then(loginData => {
             console.log(loginData);
-            // сохранить значения в куки
+
+            this.setCookie('access_token', loginData.session['access_token'], 7);
+            this.setCookie('expires_at', loginData.session['expires_at'], 7);
+            this.setCookie('refresh_token', loginData.session['refresh_token'], 7);
+            this.setCookie('token_type', loginData.session['token_type'], 7);
+            this.setCookie('email', loginData.user['email'], 7);
+            this.setCookie('u_id', loginData.user['id'], 7);
+            this.setCookie('role', loginData.user['role'], 7);
+
+            location.reload();
         })
+    }
+
+    isTokenExpired() {
+        const expiresAt = this.getCookie('expires_at');
+
+        if (!expiresAt) {
+            return true;
+        }
+
+        let expiresAtDate;
+
+        if (!isNaN(expiresAt) && Number(expiresAt) > 0) {
+            expiresAtDate = new Date(Number(expiresAt) * 1000);
+        } else {
+            expiresAtDate = new Date(expiresAt);
+        }
+
+        if (isNaN(expiresAtDate.getTime())) {
+            console.error('Invalid expires_at format:', expiresAt);
+            return true;
+        }
+
+        return expiresAtDate < new Date();
+    }
+
+    async refreshAccessToken() {
+        const refreshToken = this.getCookie('refresh_token');
+        if (!refreshToken) {
+            console.error('No refresh token found');
+            return null;
+        }
+
+        try {
+            const response = await fetch(`https://${Dictionary.supabaseAuth}/auth/v1/token?grant_type=refresh_token`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': Dictionary.anonTocken
+                },
+                body: JSON.stringify({refresh_token: refreshToken})
+            });
+
+            if (!response.ok) {
+                console.error(`Failed to refresh token: ${response.status}`);
+            }
+
+            const {access_token, expires_at, refresh_token} = await response.json();
+            this.setCookie('access_token', access_token, 7);
+            this.setCookie('expires_at', new Date(Date.now() + expires_at * 1000).toISOString(), 7);
+            this.setCookie('refresh_token', refresh_token, 7);
+
+            return access_token;
+        } catch (error) {
+            console.error('Error refreshing token:', error);
+            return null;
+        }
     }
 
     async signIn(email, password) {
@@ -125,6 +194,28 @@ class Main {
             console.error('помилка входу:', error.message);
             return null;
         }
+    }
+
+    setCookie(name, value, days) {
+        let expires = "";
+        if (days) {
+            const date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/";
+    }
+
+    getCookie(name) {
+        const nameEQ = name + "=";
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            let cookie = cookies[i].trim();
+            if (cookie.indexOf(nameEQ) === 0) {
+                return decodeURIComponent(cookie.substring(nameEQ.length));
+            }
+        }
+        return null;
     }
 
     addIncome() {
@@ -249,33 +340,75 @@ class Main {
     }
 
     async addRecord(sum, type, category = null, comment = null) {
-        const response = await fetch(Dictionary.supabaseUrl, {
-            method: 'POST',
-            headers: Dictionary.supabaseToken,
-            body: JSON.stringify({
-                sum: sum,
-                type: type,
-                category: category,
-                comment: comment,
-                created_at: new Date().toISOString()
-            })
-        });
+        let accessToken = this.getCookie('access_token');
+        const tokenType = this.getCookie('token_type') || 'Bearer';
+        const userId = this.getCookie('u_id');
 
-        if (!response.ok) {
-            console.error('Error supabase:', response.statusText);
-            return false;
+        if (!accessToken || this.isTokenExpired()) {
+            accessToken = await this.refreshAccessToken();
+            if (!accessToken) {
+                console.error('Failed to refresh token, cannot proceed');
+                return false;
+            }
         }
 
-        return true;
+        try {
+            const response = await fetch(Dictionary.supabaseUrl, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `${tokenType} ${accessToken}`,
+                    'Content-Type': 'application/json',
+                    'apikey': Dictionary.anonTocken,
+                },
+                body: JSON.stringify({
+                    sum: sum,
+                    type: type,
+                    category: category,
+                    comment: comment,
+                    created_at: new Date().toISOString(),
+                    user_id: userId
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Supabase error:', response.status, errorData);
+                return false;
+            }
+
+            return true;
+        } catch (error) {
+            console.error('Error adding record:', error);
+            return false;
+        }
     }
 
     async getRecords(where = '') {
-        let url = '';
+        let accessToken = this.getCookie('access_token');
+        const tokenType = this.getCookie('token_type') || 'Bearer';
+        const userId = this.getCookie('u_id');
+        let whereUrl = `&user_id=eq.${encodeURIComponent(userId)}`;
+
         if (where) {
-            url += `&${where}`;
+            whereUrl = `&${where}&user_id=eq.${encodeURIComponent(userId)}`;
         }
-        const response = await fetch(Dictionary.supabaseUrl + '?select=*' + url, {
-            headers: Dictionary.supabaseToken
+
+        if (!accessToken || this.isTokenExpired()) {
+            accessToken = await this.refreshAccessToken();
+            if (!accessToken) {
+                console.error('Failed to refresh token, cannot proceed');
+                return false;
+            }
+        }
+        console.log(Dictionary.supabaseUrl + '?select=*' + whereUrl);
+        const response = await fetch(Dictionary.supabaseUrl + '?select=*' + whereUrl, {
+            method: 'GET',
+            headers: {
+                'Authorization': `${tokenType} ${accessToken}`,
+                'Content-Type': 'application/json',
+                'apikey': Dictionary.anonTocken,
+                'Accept': 'application/json'
+            }
         });
 
         if (!response.ok) {
