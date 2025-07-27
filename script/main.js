@@ -9,6 +9,7 @@ class Main {
         this.sphObj = new SPH();
 
         if (Main.isset(this.main)) {
+            this.auth = new Auth(this.main);
             this.getBlockList();
             this.main.addEventListener('click', event => this.clickHandler(event.target));
             this.setCategory();
@@ -18,11 +19,17 @@ class Main {
     }
 
     firstScreen() {
-        if (!this.isTokenExpired()) {
+        if (!this.auth.isTokenExpired()) {
+            this.setLogin();
             this.activeBlock('menu');
         } else {
             this.activeBlock('auth');
         }
+    }
+
+    setLogin() {
+        const loginElem = document.querySelector('p[data-mf-elem="login"]');
+        loginElem.innerHTML = this.auth.getCookie('email');
     }
 
     clickHandler(elem) {
@@ -31,7 +38,7 @@ class Main {
 
             switch (elem.dataset.mfClick) {
                 case 'auth':
-                    this.auth();
+                    this.auth.auth();
                     break;
                 case 'menu':
                 case 'expense':
@@ -94,129 +101,6 @@ class Main {
         return elem !== null && elem !== undefined;
     }
 
-    auth() {
-        const login = this.main.querySelector('input[data-mf-input="login"]');
-        const pass = this.main.querySelector('input[data-mf-input="pass"]');
-
-        this.signIn(login.value, pass.value).then(loginData => {
-            console.log(loginData);
-
-            this.setCookie('access_token', loginData.session['access_token'], 7);
-            this.setCookie('expires_at', loginData.session['expires_at'], 7);
-            this.setCookie('refresh_token', loginData.session['refresh_token'], 7);
-            this.setCookie('token_type', loginData.session['token_type'], 7);
-            this.setCookie('email', loginData.user['email'], 7);
-            this.setCookie('u_id', loginData.user['id'], 7);
-            this.setCookie('role', loginData.user['role'], 7);
-
-            location.reload();
-        })
-    }
-
-    isTokenExpired() {
-        const expiresAt = this.getCookie('expires_at');
-
-        if (!expiresAt) {
-            return true;
-        }
-
-        let expiresAtDate;
-
-        if (!isNaN(expiresAt) && Number(expiresAt) > 0) {
-            expiresAtDate = new Date(Number(expiresAt) * 1000);
-        } else {
-            expiresAtDate = new Date(expiresAt);
-        }
-
-        if (isNaN(expiresAtDate.getTime())) {
-            console.error('Invalid expires_at format:', expiresAt);
-            return true;
-        }
-
-        return expiresAtDate < new Date();
-    }
-
-    async refreshAccessToken() {
-        const refreshToken = this.getCookie('refresh_token');
-        if (!refreshToken) {
-            console.error('No refresh token found');
-            return null;
-        }
-
-        try {
-            const response = await fetch(`https://${Dictionary.supabaseAuth}/auth/v1/token?grant_type=refresh_token`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'apikey': Dictionary.anonTocken
-                },
-                body: JSON.stringify({refresh_token: refreshToken})
-            });
-
-            if (!response.ok) {
-                console.error(`Failed to refresh token: ${response.status}`);
-            }
-
-            const {access_token, expires_at, refresh_token} = await response.json();
-            this.setCookie('access_token', access_token, 7);
-            this.setCookie('expires_at', new Date(Date.now() + expires_at * 1000).toISOString(), 7);
-            this.setCookie('refresh_token', refresh_token, 7);
-
-            return access_token;
-        } catch (error) {
-            console.error('Error refreshing token:', error);
-            return null;
-        }
-    }
-
-    async signIn(email, password) {
-        try {
-            const response = await fetch(`${Dictionary.supabaseAuth}/auth/v1/token?grant_type=password`, {
-                method: 'POST',
-                headers: Dictionary.supabaseToken,
-                body: JSON.stringify({
-                    email: email,
-                    password: password
-                })
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                console.error('Помилка під час входу');
-            }
-
-            return {
-                user: data.user,
-                session: data
-            };
-        } catch (error) {
-            console.error('помилка входу:', error.message);
-            return null;
-        }
-    }
-
-    setCookie(name, value, days) {
-        let expires = "";
-        if (days) {
-            const date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            expires = "; expires=" + date.toUTCString();
-        }
-        document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/";
-    }
-
-    getCookie(name) {
-        const nameEQ = name + "=";
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            let cookie = cookies[i].trim();
-            if (cookie.indexOf(nameEQ) === 0) {
-                return decodeURIComponent(cookie.substring(nameEQ.length));
-            }
-        }
-        return null;
-    }
 
     addIncome() {
         const incomeBlock = this.main.querySelector('div[data-mf-block="income"]');
@@ -340,12 +224,12 @@ class Main {
     }
 
     async addRecord(sum, type, category = null, comment = null) {
-        let accessToken = this.getCookie('access_token');
-        const tokenType = this.getCookie('token_type') || 'Bearer';
-        const userId = this.getCookie('u_id');
+        let accessToken = this.auth.getCookie('access_token');
+        const tokenType = this.auth.getCookie('token_type') || 'Bearer';
+        const userId = this.auth.getCookie('u_id');
 
-        if (!accessToken || this.isTokenExpired()) {
-            accessToken = await this.refreshAccessToken();
+        if (!accessToken || this.auth.isTokenExpired()) {
+            accessToken = await this.auth.refreshAccessToken();
             if (!accessToken) {
                 console.error('Failed to refresh token, cannot proceed');
                 return false;
@@ -384,17 +268,17 @@ class Main {
     }
 
     async getRecords(where = '') {
-        let accessToken = this.getCookie('access_token');
-        const tokenType = this.getCookie('token_type') || 'Bearer';
-        const userId = this.getCookie('u_id');
+        let accessToken = this.auth.getCookie('access_token');
+        const tokenType = this.auth.getCookie('token_type') || 'Bearer';
+        const userId = this.auth.getCookie('u_id');
         let whereUrl = `&user_id=eq.${encodeURIComponent(userId)}`;
 
         if (where) {
             whereUrl = `&${where}&user_id=eq.${encodeURIComponent(userId)}`;
         }
 
-        if (!accessToken || this.isTokenExpired()) {
-            accessToken = await this.refreshAccessToken();
+        if (!accessToken || this.auth.isTokenExpired()) {
+            accessToken = await this.auth.refreshAccessToken();
             if (!accessToken) {
                 console.error('Failed to refresh token, cannot proceed');
                 return false;
