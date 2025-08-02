@@ -34,4 +34,11 @@ class DateWorker {
 
         return `<b>${dateDay}.${dateMonth}.${date.getFullYear()}</b>`;
     }
+
+    static getNameDayOfWeek(dateStr) {
+        const date = new Date(dateStr);
+        const days = ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+
+        return days[date.getDay()];
+    }
 }

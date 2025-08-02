@@ -28,7 +28,13 @@ class SPH {
                 break;
             case 's_date':
                 this.activeTab(elem.dataset['mfClick']);
-                mObj.getStatistic(elem.dataset['mfClick']);
+                break;
+            case 'get_date_report':
+                if(this.checkInputDate()) {
+                    mObj.getStatistic('s_date');
+                } else {
+                    alert('Потрібно обовʼязково вказати дату "З" та "По"');
+                }
                 break;
         }
     }
@@ -68,6 +74,13 @@ class SPH {
         };
     }
 
+    checkInputDate() {
+        const inputFrom = this.tabDate.querySelector('input[data-mf-elem="s_date_from"]');
+        const inputTo = this.tabDate.querySelector('input[data-mf-elem="s_date_to"]');
+
+        return inputFrom.value.length > 0 && inputTo.value.length > 0;
+    }
+
     activeToday(result, data) {
         const incomeTable = this.tabToday.querySelector('tbody[data-mf-block="table_income"]');
         const expenseTable = this.tabToday.querySelector('tbody[data-mf-block="table_expense"]');
@@ -96,7 +109,30 @@ class SPH {
     }
 
     activeMonth(result, data) {
+        const incomeTable = this.tabMonth.querySelector('tbody[data-mf-block="table_income"]');
+        const expenseTable = this.tabMonth.querySelector('tbody[data-mf-block="table_expense"]');
+        const expenseTotalTable = this.tabMonth.querySelector('tbody[data-mf-block="table_expense_total"]');
 
-        console.log(result, data);
+        if (result.length > 0) {
+            incomeTable.innerHTML = Template.getStatisticIncomeWeek(data.income);
+            expenseTable.innerHTML = Template.getStatisticExpenseWeek(data.expense, expenseTotalTable);
+        } else {
+            incomeTable.innerHTML = '<tr><td>Дані відсутні</td></tr>';
+            expenseTable.innerHTML = '<tr><td colspan="3">Дані відсутні</td></tr>';
+        }
+    }
+
+    activeDate(result, data) {
+        const incomeTable = this.tabDate.querySelector('tbody[data-mf-block="table_income"]');
+        const expenseTable = this.tabDate.querySelector('tbody[data-mf-block="table_expense"]');
+        const expenseTotalTable = this.tabDate.querySelector('tbody[data-mf-block="table_expense_total"]');
+
+        if (result.length > 0) {
+            incomeTable.innerHTML = Template.getStatisticIncomeWeek(data.income);
+            expenseTable.innerHTML = Template.getStatisticExpenseWeek(data.expense, expenseTotalTable);
+        } else {
+            incomeTable.innerHTML = '<tr><td>Дані відсутні</td></tr>';
+            expenseTable.innerHTML = '<tr><td colspan="3">Дані відсутні</td></tr>';
+        }
     }
 }

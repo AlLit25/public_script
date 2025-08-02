@@ -59,7 +59,7 @@
             </div>
             <div class="pt-5 hide" data-mf-block="income">
                 <div class="text-center pt-2">
-                    <button class="btn btn-secondary btn-lg" data-mf-click="menu">Головна</button>
+                    <button class="btn btn-primary btn-lg" data-mf-click="menu">Головна</button>
                 </div>
                 <div class="text-center pt-2">
                     <label class="col-6">
@@ -72,7 +72,7 @@
             </div>
             <div class="pt-5 hide" data-mf-block="expense">
                 <div class="text-center pt-2">
-                    <button class="btn btn-secondary btn-lg" data-mf-click="menu">Головна</button>
+                    <button class="btn btn-primary btn-lg" data-mf-click="menu">Головна</button>
                 </div>
                 <div class="text-center pt-2">
                     <label class="col-6">
@@ -96,8 +96,8 @@
                 </div>
             </div>
             <div class="pt-5 hide" data-mf-block="statistic">
-                <div class="text-center pt-2">
-                    <button class="btn btn-secondary btn-lg" data-mf-click="menu">Головна</button>
+                <div class="text-center m-4">
+                    <button class="btn btn-primary btn-lg" data-mf-click="menu">Головна</button>
                 </div>
                 <div>
                     <ul class="nav nav-tabs" data-mfs-block="s_tabs_list">
@@ -152,6 +152,7 @@
                     </div>
                 </div>
                 <div data-mfs-block="s_week" class="hide">
+                    <div data-mfs-block="s_week_date"></div>
                     <div>
                         <table class="table">
                             <thead>
@@ -204,8 +205,130 @@
                         </table>
                     </div>
                 </div>
-                <div data-mfs-block="s_month" class="hide">Місяць</div>
-                <div data-mfs-block="s_date" class="hide">Дата</div>
+                <div data-mfs-block="s_month" class="hide">
+                    <div data-mfs-block="s_month_date"></div>
+                    <div>
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <td class="table-success">Дохід</td>
+                            </tr>
+                            </thead>
+                            <tbody data-mf-block="table_income">
+                            <tr>
+                                <td>Завантаження...</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <td colspan="3" class="table-danger">Витрати</td>
+                            </tr>
+                            <tr>
+                                <td>Сума</td>
+                                <td>Категорія</td>
+                                <td>Коментар</td>
+                            </tr>
+                            </thead>
+                            <tbody data-mf-block="table_expense">
+                            <tr>
+                                <td colspan="3">Завантаження...</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <td colspan="3" class="table-warning">Витрати за категоріями</td>
+                            </tr>
+                            <tr>
+                                <td>Сума</td>
+                                <td>Категорія</td>
+                            </tr>
+                            </thead>
+                            <tbody data-mf-block="table_expense_total">
+                            <tr>
+                                <td colspan="2">Завантаження...</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div data-mfs-block="s_date" class="hide">
+                    <div class="row m-2">
+                        <div class="col-4">
+                            <div class="row g-3 align-items-center">
+                                <div class="col-auto">
+                                    <label for="inputDateFrom" class="col-form-label">З:</label>
+                                </div>
+                                <div class="col-auto">
+                                    <input type="date" id="inputDateFrom" class="form-control"
+                                           data-mf-elem="s_date_from"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="row g-3 align-items-center">
+                                <div class="col-auto">
+                                    <label for="inputDateTo" class="col-form-label">По:</label>
+                                </div>
+                                <div class="col-auto">
+                                    <input type="date" id="inputDateTo" class="form-control"
+                                           data-mf-elem="s_date_to"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <button class="btn btn-success" data-mf-click="get_date_report">Відобразити</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <td class="table-success">Дохід</td>
+                                </tr>
+                                </thead>
+                                <tbody data-mf-block="table_income"></tbody>
+                            </table>
+                        </div>
+                        <div>
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <td colspan="3" class="table-danger">Витрати</td>
+                                </tr>
+                                <tr>
+                                    <td>Сума</td>
+                                    <td>Категорія</td>
+                                    <td>Коментар</td>
+                                </tr>
+                                </thead>
+                                <tbody data-mf-block="table_expense"></tbody>
+                            </table>
+                        </div>
+                        <div>
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <td colspan="3" class="table-warning">Витрати за категоріями</td>
+                                </tr>
+                                <tr>
+                                    <td>Сума</td>
+                                    <td>Категорія</td>
+                                </tr>
+                                </thead>
+                                <tbody data-mf-block="table_expense_total"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
         <footer></footer>
@@ -213,6 +336,8 @@
         <script src="script/sph.js"></script>
         <script src="script/template.js"></script>
         <script src="script/date_worker.js"></script>
+        <script src="script/data_worker.js"></script>
+        <script src="script/data_handler.js"></script>
         <script src="script/dictionary.js"></script>
         <script src="script/auth.js"></script>
     </body>

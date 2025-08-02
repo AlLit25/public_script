@@ -10,9 +10,10 @@ class Main {
 
         if (Main.isset(this.main)) {
             this.auth = new Auth(this.main);
+            this.dw = new DataWorker(this, this.main, this.auth, this.sphObj);
             this.getBlockList();
             this.main.addEventListener('click', event => this.clickHandler(event.target));
-            this.setCategory();
+            this.dw.setCategory();
 
             this.firstScreen();
         }
@@ -32,6 +33,25 @@ class Main {
         loginElem.innerHTML = this.auth.getCookie('email');
     }
 
+    setToday() {
+        const todayBlock = this.main.querySelector('div[data-mfs-block="s_today_date"]');
+        todayBlock.innerHTML = DateWorker.getDateTableFormat(new Date());
+    }
+
+    setWeekdays(dateStart, dateEnd) {
+        const weekBlock = this.main.querySelector('div[data-mfs-block="s_week_date"]');
+        const startName = DateWorker.getNameDayOfWeek(dateStart);
+        const endName = DateWorker.getNameDayOfWeek(dateEnd);
+        weekBlock.innerHTML = `<b>${dateStart} (${startName}) - ${dateEnd} (${endName})</b>`;
+    }
+
+    setMonth(dateStart, dateEnd) {
+        const weekBlock = this.main.querySelector('div[data-mfs-block="s_month_date"]');
+        const startName = DateWorker.getNameDayOfWeek(dateStart);
+        const endName = DateWorker.getNameDayOfWeek(dateEnd);
+        weekBlock.innerHTML = `<b>${dateStart} (${startName}) - ${dateEnd} (${endName})</b>`;
+    }
+
     clickHandler(elem) {
         if (elem.hasAttribute('data-mf-click')) {
             let nextCheck = true;
@@ -47,36 +67,24 @@ class Main {
                     nextCheck = false;
                     break;
                 case 'add_income':
-                    this.addIncome();
+                    this.dw.addIncome();
                     nextCheck = false;
                     break;
                 case 'expense_add':
-                    this.addExpense();
+                    this.dw.addExpense();
                     nextCheck = false;
                     break;
                 case 'statistic':
                     this.activeBlock(elem.dataset.mfClick);
-                    this.getStatistic();
+                    this.dw.getStatistic();
                     nextCheck = false;
                     break;
             }
 
             if (nextCheck) {
-                this.sphObj.clickHandler(elem, this);
+                this.sphObj.clickHandler(elem, this.dw);
             }
         }
-    }
-
-    setCategory() {
-        const expenseCategory = this.main.querySelector('select[data-mf-input="expense_category"]');
-
-        let optionHtml = '';
-
-        for (const code in Dictionary.expenseCategory) {
-            optionHtml += `<option value="${code}">${Dictionary.expenseCategory[code]}</option>`
-        }
-
-        expenseCategory.innerHTML = optionHtml;
     }
 
     getBlockList() {
@@ -90,7 +98,8 @@ class Main {
     activeBlock(codeBlock) {
         for (const code in this.blockList) {
             if (codeBlock === code) {
-                if (this.blockList[code].classList.contains('hide')) this.blockList[code].classList.remove('hide');
+                if (this.blockList[code].classList.contains('hide'))
+                    this.blockList[code].classList.remove('hide');
             } else {
                 this.blockList[code].classList.add('hide');
             }
@@ -99,207 +108,5 @@ class Main {
 
     static isset(elem) {
         return elem !== null && elem !== undefined;
-    }
-
-
-    addIncome() {
-        const incomeBlock = this.main.querySelector('div[data-mf-block="income"]');
-        const sumInput = incomeBlock.querySelector('input[data-mf-input="income"]');
-
-        if (sumInput.value.length > 0) {
-            this.addRecord(sumInput.value, 'income').then(result => {
-                if (result) {
-                    sumInput.value = '';
-                    this.activeBlock('menu');
-                }
-            });
-        } else {
-            alert('Обовʼязково необхідно вказати суму');
-        }
-    }
-
-    addExpense() {
-        const expenseBlock = this.main.querySelector('div[data-mf-block="expense"]');
-        const expenseCat = expenseBlock.querySelector('select[data-mf-input="expense_category"]');
-        const expenseSum = expenseBlock.querySelector('input[data-mf-input="expense_sum"]');
-        const expenseCom = expenseBlock.querySelector('textarea[data-mf-input="expense_comment"]');
-
-        if (expenseSum.value.length > 0 && expenseCat.value.length) {
-            this.addRecord(expenseSum.value, 'expense', expenseCat.value, expenseCom.value).then(result => {
-                if (result) {
-                    expenseCat.value = '';
-                    expenseSum.value = '';
-                    expenseCom.value = '';
-                    this.activeBlock('menu');
-                }
-            });
-        } else {
-            alert('Обовʼязково необхідно вказати суму та категорію');
-        }
-    }
-
-    getStatistic(tab = 's_today') {
-        let where = '';
-        switch (tab) {
-            case 's_today':
-                const paramToday = DateWorker.getTodayRange();
-                where = `created_at=eq.${paramToday.today}`;
-                this.setToday();
-                break;
-            case 's_week':
-                const paramWeek = DateWorker.getWeekRange();
-                where = `created_at=gte.${paramWeek.start}&created_at=lte.${paramWeek.end}`;
-                break;
-            case 's_month':
-                const paramMonth = DateWorker.getMonthRange();
-                where = `created_at=gte.${paramMonth.start}&created_at=lte.${paramMonth.end}`;
-                break;
-            case 's_date':
-                console.log(tab);
-                break;
-        }
-
-        this.getRecords(where).then(result => {
-            const data = Main.groupData(result);
-            switch (tab) {
-                case 's_today':
-                    this.sphObj.activeToday(result, data);
-                    break;
-                case 's_week':
-                    this.sphObj.activeWeek(result, data);
-                    break;
-                case 's_month':
-                    this.sphObj.activeWeek(result, data);
-                    break;
-            }
-        });
-    }
-
-    setToday() {
-        const todayBlock = this.main.querySelector('div[data-mfs-block="s_today_date"]');
-        todayBlock.innerHTML = DateWorker.getDateTableFormat(new Date());
-    }
-
-    static groupData(dataRaw) {
-        const result = new Map([
-            ['income', new Map()],
-            ['expense', new Map()]
-        ]);
-
-        if (!Array.isArray(dataRaw)) {
-            console.error('Ошибка: dataRaw должен быть массивом');
-            return {income: {}, expense: {}};
-        }
-
-        for (const item of dataRaw) {
-            if (!item.type || !item.created_at || !item.sum) {
-                console.warn('Пропущена запись с некорректными данными:', item);
-                continue;
-            }
-
-            const date = DateWorker.formatDate(item.created_at);
-            const elem = {
-                sum: item.sum,
-                date: date,
-                category: item.category || null,
-                comment: item.comment || null
-            };
-
-            let dateMap = result.get(item.type);
-            if (!dateMap) {
-                if (item.type !== 'income' && item.type !== 'expense') continue;
-                dateMap = new Map();
-                result.set(item.type, dateMap);
-            }
-
-            let entries = dateMap.get(date) || [];
-            entries.push(elem);
-            dateMap.set(date, entries);
-        }
-
-        return {
-            income: Object.fromEntries(result.get('income') || []),
-            expense: Object.fromEntries(result.get('expense') || [])
-        };
-    }
-
-    async addRecord(sum, type, category = null, comment = null) {
-        let accessToken = this.auth.getCookie('access_token');
-        const tokenType = this.auth.getCookie('token_type') || 'Bearer';
-        const userId = this.auth.getCookie('u_id');
-
-        if (!accessToken || this.auth.isTokenExpired()) {
-            accessToken = await this.auth.refreshAccessToken();
-            if (!accessToken) {
-                console.error('Failed to refresh token, cannot proceed');
-                return false;
-            }
-        }
-
-        try {
-            const response = await fetch(Dictionary.supabaseUrl, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `${tokenType} ${accessToken}`,
-                    'Content-Type': 'application/json',
-                    'apikey': Dictionary.anonTocken,
-                },
-                body: JSON.stringify({
-                    sum: sum,
-                    type: type,
-                    category: category,
-                    comment: comment,
-                    created_at: new Date().toISOString(),
-                    user_id: userId
-                })
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error('Supabase error:', response.status, errorData);
-                return false;
-            }
-
-            return true;
-        } catch (error) {
-            console.error('Error adding record:', error);
-            return false;
-        }
-    }
-
-    async getRecords(where = '') {
-        let accessToken = this.auth.getCookie('access_token');
-        const tokenType = this.auth.getCookie('token_type') || 'Bearer';
-        const userId = this.auth.getCookie('u_id');
-        let whereUrl = `&user_id=eq.${encodeURIComponent(userId)}`;
-
-        if (where) {
-            whereUrl = `&${where}&user_id=eq.${encodeURIComponent(userId)}`;
-        }
-
-        if (!accessToken || this.auth.isTokenExpired()) {
-            accessToken = await this.auth.refreshAccessToken();
-            if (!accessToken) {
-                console.error('Failed to refresh token, cannot proceed');
-                return false;
-            }
-        }
-        console.log(Dictionary.supabaseUrl + '?select=*' + whereUrl);
-        const response = await fetch(Dictionary.supabaseUrl + '?select=*' + whereUrl, {
-            method: 'GET',
-            headers: {
-                'Authorization': `${tokenType} ${accessToken}`,
-                'Content-Type': 'application/json',
-                'apikey': Dictionary.anonTocken,
-                'Accept': 'application/json'
-            }
-        });
-
-        if (!response.ok) {
-            console.error('Ошибка:', response.statusText);
-            return;
-        }
-
-        return await response.json();
     }
 }
