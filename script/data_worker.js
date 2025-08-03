@@ -151,4 +151,8 @@ class DataWorker {
             expense: Object.fromEntries(result.get('expense') || [])
         };
     }
+
+    getBalance() {
+
+    }
 }

@@ -66,6 +66,10 @@ class Main {
                     this.activeBlock(elem.dataset.mfClick);
                     nextCheck = false;
                     break;
+                case 'balance':
+                    this.activeBlock(elem.dataset.mfClick);
+                    nextCheck = false;
+                    break;
                 case 'add_income':
                     this.dw.addIncome();
                     nextCheck = false;

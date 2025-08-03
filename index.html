@@ -56,6 +56,9 @@
                 <div class="text-center pt-3">
                     <button class="btn btn-primary btn-lg" data-mf-click="statistic">Статистика</button>
                 </div>
+                <div class="text-center pt-3">
+                    <button class="btn btn-primary btn-lg" data-mf-click="balance">Баланс</button>
+                </div>
             </div>
             <div class="pt-5 hide" data-mf-block="income">
                 <div class="text-center pt-2">
@@ -326,6 +329,28 @@
                                 </thead>
                                 <tbody data-mf-block="table_expense_total"></tbody>
                             </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pt-5 hide" data-mf-block="balance">
+                <div class="text-center m-4">
+                    <button class="btn btn-primary btn-lg" data-mf-click="menu">Головна</button>
+                </div>
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-4">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">₴</span>
+                                <input type="number" min="0" class="form-control">
+                            </div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">$</span>
+                                <input type="number" min="0" class="form-control">
+                            </div>
+                            <div class="text-center">
+                                <button class="btn btn-success" data-mf-click="save_balance">Зберегти</button>
+                            </div>
                         </div>
                     </div>
                 </div>

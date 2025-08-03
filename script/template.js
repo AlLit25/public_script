@@ -57,7 +57,8 @@ class Template {
         const categorySum = {};
 
         for (const date in data) {
-            html += `<tr><td>${DateWorker.getDateTableFormat(new Date(date))}</td></tr>`;
+            const dayName = DateWorker.getNameDayOfWeek(date);
+            html += `<tr><td>${DateWorker.getDateTableFormat(new Date(date))} (${dayName})</td></tr>`;
             for (const elem of data[date]) {
                 html +=
                     `<tr>

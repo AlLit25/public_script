@@ -1,3 +1,9 @@
+input[type="number"].form-control {
+    -webkit-appearance: none !important;
+    -moz-appearance: textfield !important;
+    appearance: textfield !important;
+}
+
 .hide {
     display: none;
 }
