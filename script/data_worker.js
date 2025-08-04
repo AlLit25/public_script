@@ -4,6 +4,13 @@ class DataWorker {
         this.mainObj = mainObj;
         this.main = mainBlock;
         this.sphObj = sphObj;
+
+        const balanceBlock = this.main.querySelector('div[data-mf-block="balance"]');
+        this.inputUah = balanceBlock.querySelector('input[data-mf-elem="balance_uah"]');
+        this.inputUsd = balanceBlock.querySelector('input[data-mf-elem="balance_usd"]');
+        this.balanceeUpdate = 0;
+
+        this.getBalance();
     }
 
     setCategory() {
@@ -153,6 +160,27 @@ class DataWorker {
     }
 
     getBalance() {
+        this.dh.getBalance().then(result => {
+           if (result.length > 0) {
+               for (const item of result) {
+                   this.balanceeUpdate = item['id'];
+                   this.inputUah.value = item['uah'];
+                   this.inputUsd.value = item['usd'];
+               }
+           }
+        });
+    }
 
+    saveBalance() {
+        if (this.inputUah.value.length > 0 || this.inputUsd.value.length > 0) {
+            if (this.balanceeUpdate > 0) {
+                // проверить метод обновления не работает
+                this.dh.updateBalance(this.balanceeUpdate, Number(this.inputUah.value), Number(this.inputUsd.value))
+                    .then(() => { /*location.reload(); */ })
+            } else {
+                this.dh.addBalance(Number(this.inputUah.value), Number(this.inputUsd.value))
+                    .then(() => { location.reload(); });
+            }
+        }
     }
 }

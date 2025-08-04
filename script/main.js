@@ -83,6 +83,9 @@ class Main {
                     this.dw.getStatistic();
                     nextCheck = false;
                     break;
+                case 'save_balance':
+                    this.dw.saveBalance();
+                    break;
             }
 
             if (nextCheck) {
