@@ -209,4 +209,34 @@ class DataWorker {
             }
         }
     }
+
+    addItemCheckBalance() {
+        const block = document.querySelector('div[data-mf-block-balance="balance_check_list"]');
+        let check = true;
+
+        if (Main.isset(block)) {
+            const itemListCheck =
+                block.querySelectorAll('input[data-mf-input="balance_check"]');
+
+            if (itemListCheck.length > 1) {
+                itemListCheck.forEach(item => {
+                    if (item.value.length === 0) {check = false;}
+                });
+            } else {
+                if (itemListCheck[0].value.length === 0) {check = false;}
+            }
+
+            if (check) {
+                this.insertInputBalance(block, itemListCheck[0]);
+            }
+        }
+    }
+
+    insertInputBalance(block, input) {
+        const newInput = input.cloneNode(true);
+
+        newInput.value = '';
+
+        block.appendChild(newInput);
+    }
 }

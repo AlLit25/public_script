@@ -87,6 +87,9 @@ class Main {
                 case 'save_balance':
                     this.dw.saveBalance();
                     break;
+                case 'add_field_check':
+                    this.dw.addItemCheckBalance();
+                    break;
             }
 
             if (nextCheck) {
