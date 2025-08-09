@@ -32,6 +32,7 @@ class DataWorker {
         if (sumInput.value.length > 0) {
             this.dh.addRecord(sumInput.value, 'income').then(result => {
                 if (result) {
+                    this.updateUahBalance(sumInput.value, 'income');
                     sumInput.value = '';
                     this.mainObj.activeBlock('menu');
                 }
@@ -50,15 +51,41 @@ class DataWorker {
         if (expenseSum.value.length > 0 && expenseCat.value.length) {
             this.dh.addRecord(expenseSum.value, 'expense', expenseCat.value, expenseCom.value).then(result => {
                 if (result) {
+                    this.updateUahBalance(expenseSum.value, 'expense');
                     expenseCat.value = '';
                     expenseSum.value = '';
                     expenseCom.value = '';
-                    this.main.activeBlock('menu');
+                    this.mainObj.activeBlock('menu');
                 }
             });
         } else {
             alert('Обовʼязково необхідно вказати суму та категорію');
         }
+    }
+
+    updateUahBalance(sum, type) {
+        this.dh.getBalance().then(balance => {
+            let sumUpdate = 0;
+            let idRow = 0;
+            let sumUsd = 0;
+
+            if (Main.isset(balance[0]['uah'])) {
+                sumUpdate = Number(balance[0]['uah']);
+                idRow = Number(balance[0]['id']);
+                sumUsd = Number(balance[0]['usd']);
+            }
+
+            if (type === 'income') {
+                sumUpdate = sumUpdate + Number(sum);
+            } else if (type === 'expense') {
+                sumUpdate = sumUpdate - Number(sum);
+            }
+
+            if (idRow > 0) {
+                this.dh.updateBalance(idRow, sumUpdate, sumUsd).then();
+            }
+        });
+
     }
 
     getStatistic(tab = 's_today') {
