@@ -62,9 +62,6 @@
             </div>
             <div class="pt-5 hide" data-mf-block="income">
                 <div class="text-center pt-2">
-                    <button class="btn btn-primary btn-lg" data-mf-click="menu">Головна</button>
-                </div>
-                <div class="text-center pt-2">
                     <label class="col-6">
                         <input type="number" class="form-control" data-mf-input="income"/>
                     </label>
@@ -72,11 +69,11 @@
                 <div class="text-center pt-2">
                     <button type="button" class="btn btn-success btn-lg" data-mf-click="add_income">Додати</button>
                 </div>
-            </div>
-            <div class="pt-5 hide" data-mf-block="expense">
-                <div class="text-center pt-2">
+                <div class="text-center pt-5">
                     <button class="btn btn-primary btn-lg" data-mf-click="menu">Головна</button>
                 </div>
+            </div>
+            <div class="pt-5 hide" data-mf-block="expense">
                 <div class="text-center pt-2">
                     <label class="col-6">
                         <select class="form-select" data-mf-input="expense_category">
@@ -97,9 +94,12 @@
                 <div class="text-center pt-2">
                     <button type="button" class="btn btn-success btn-lg" data-mf-click="expense_add">Додати</button>
                 </div>
+                <div class="text-center pt-5">
+                    <button class="btn btn-primary btn-lg" data-mf-click="menu">Головна</button>
+                </div>
             </div>
-            <div class="pt-5 hide" data-mf-block="statistic">
-                <div class="text-center m-4">
+            <div class="pt-1 hide" data-mf-block="statistic">
+                <div class="text-center m-1">
                     <button class="btn btn-primary btn-lg" data-mf-click="menu">Головна</button>
                 </div>
                 <div>
@@ -264,7 +264,7 @@
                 </div>
                 <div data-mfs-block="s_date" class="hide">
                     <div class="row m-2">
-                        <div class="col-4">
+                        <div class="col-6">
                             <div class="row g-3 align-items-center">
                                 <div class="col-auto">
                                     <label for="inputDateFrom" class="col-form-label">З:</label>
@@ -275,7 +275,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-4">
+                        <div class="col-6">
                             <div class="row g-3 align-items-center">
                                 <div class="col-auto">
                                     <label for="inputDateTo" class="col-form-label">По:</label>
@@ -286,9 +286,9 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-4">
-                            <button class="btn btn-success" data-mf-click="get_date_report">Відобразити</button>
-                        </div>
+                    </div>
+                    <div class="m-2">
+                        <button class="btn btn-success" data-mf-click="get_date_report">Відобразити</button>
                     </div>
                     <div>
                         <div>
@@ -334,9 +334,6 @@
                 </div>
             </div>
             <div class="pt-5 hide" data-mf-block="balance">
-                <div class="text-center m-4">
-                    <button class="btn btn-primary btn-lg" data-mf-click="menu">Головна</button>
-                </div>
                 <div class="container">
                     <div class="row justify-content-center">
                         <div class="col-4">
@@ -350,6 +347,9 @@
                             </div>
                             <div class="text-center">
                                 <button class="btn btn-success" data-mf-click="save_balance">Зберегти</button>
+                            </div>
+                            <div class="text-center m-4">
+                                <button class="btn btn-primary btn-lg" data-mf-click="menu">Головна</button>
                             </div>
                         </div>
                     </div>

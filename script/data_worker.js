@@ -174,9 +174,8 @@ class DataWorker {
     saveBalance() {
         if (this.inputUah.value.length > 0 || this.inputUsd.value.length > 0) {
             if (this.balanceeUpdate > 0) {
-                // проверить метод обновления не работает
                 this.dh.updateBalance(this.balanceeUpdate, Number(this.inputUah.value), Number(this.inputUsd.value))
-                    .then(() => { /*location.reload(); */ })
+                    .then(() => { location.reload(); })
             } else {
                 this.dh.addBalance(Number(this.inputUah.value), Number(this.inputUsd.value))
                     .then(() => { location.reload(); });

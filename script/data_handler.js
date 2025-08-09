@@ -172,12 +172,13 @@ class DataHandler {
         }
 
         try {
-            const response = await fetch(`${Dictionary.balanceUrl}/${id}`, {
+            const response = await fetch(`${Dictionary.balanceUrl}?id=eq.${id}`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `${tokenType} ${accessToken}`,
                     'Content-Type': 'application/json',
                     'apikey': Dictionary.anonTocken,
+                    'Prefer': 'return=minimal'
                 },
                 body: JSON.stringify({
                     user_id: userId,
@@ -187,13 +188,7 @@ class DataHandler {
                 })
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error('Supabase error:', response.status, errorData);
-                return false;
-            }
-
-            return true;
+            return response.ok;
         } catch (error) {
             console.error('Error updating record:', error);
             return false;
