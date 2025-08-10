@@ -13,6 +13,7 @@ class Main {
             this.dw = new DataWorker(this, this.main, this.auth, this.sphObj);
             this.getBlockList();
             this.main.addEventListener('click', event => this.clickHandler(event.target));
+            this.main.addEventListener('input', event => this.inputHandler(event.target));
             this.dw.setCategory();
 
             this.firstScreen();
@@ -90,10 +91,22 @@ class Main {
                 case 'add_field_check':
                     this.dw.addItemCheckBalance();
                     break;
+                case 'balance_remove':
+                    this.dw.dropElem(elem);
+                    this.dw.setDifference();
+                    break;
             }
 
             if (nextCheck) {
                 this.sphObj.clickHandler(elem, this.dw);
+            }
+        }
+    }
+
+    inputHandler(elem) {
+        if (elem.hasAttribute('data-mf-input')) {
+            if (elem.dataset.mfInput === 'balance_check') {
+                this.dw.setDifference();
             }
         }
     }

@@ -8,6 +8,7 @@ class DataWorker {
         const balanceBlock = this.main.querySelector('div[data-mf-block="balance"]');
         this.inputUah = balanceBlock.querySelector('input[data-mf-elem="balance_uah"]');
         this.inputUsd = balanceBlock.querySelector('input[data-mf-elem="balance_usd"]');
+        this.differenceSpan = balanceBlock.querySelector('span[data-mf-elem="difference"]');
         this.balanceeUpdate = 0;
 
         this.getBalance();
@@ -232,11 +233,35 @@ class DataWorker {
         }
     }
 
-    insertInputBalance(block, input) {
-        const newInput = input.cloneNode(true);
+    insertInputBalance(blockParent, input) {
+        const copyBlock = input.closest('div[data-mf-block-balance="balance_check_elem"]');
+        const newBlock = copyBlock.cloneNode(true);
+        const inputNewBlock = newBlock.querySelector('input[data-mf-input="balance_check"]');
 
-        newInput.value = '';
+        inputNewBlock.value = '';
 
-        block.appendChild(newInput);
+        blockParent.appendChild(newBlock);
+    }
+
+    dropElem(elem) {
+        const block = document.querySelector('div[data-mf-block-balance="balance_check_list"]');
+        const listElem = block.querySelectorAll('div[data-mf-block-balance="balance_check_elem"]');
+
+        if (listElem.length > 1) {
+            const dropElem = elem.closest('div[data-mf-block-balance="balance_check_elem"]');
+            dropElem.remove();
+        }
+    }
+
+    setDifference() {
+        const balanceInput = this.main.querySelector('input[data-mf-elem="balance_uah"]');
+        const balanceCheckList = this.main.querySelectorAll('input[data-mf-input="balance_check"]');
+
+        let sumCheck = 0;
+        for (const item of balanceCheckList) {
+            sumCheck += Number(item.value);
+        }
+
+        this.differenceSpan.innerHTML = `${Number(balanceInput.value) - sumCheck}`;
     }
 }
