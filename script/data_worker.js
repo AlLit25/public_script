@@ -35,7 +35,6 @@ class DataWorker {
                 if (result) {
                     this.updateUahBalance(sumInput.value, 'income');
                     sumInput.value = '';
-                    this.mainObj.activeBlock('menu');
                 }
             });
         } else {
@@ -53,10 +52,8 @@ class DataWorker {
             this.dh.addRecord(expenseSum.value, 'expense', expenseCat.value, expenseCom.value).then(result => {
                 if (result) {
                     this.updateUahBalance(expenseSum.value, 'expense');
-                    expenseCat.value = '';
                     expenseSum.value = '';
                     expenseCom.value = '';
-                    this.mainObj.activeBlock('menu');
                 }
             });
         } else {
@@ -189,12 +186,21 @@ class DataWorker {
 
     getBalance() {
         this.dh.getBalance().then(result => {
-           if (result.length > 0) {
-               for (const item of result) {
-                   this.balanceeUpdate = item['id'];
-                   this.inputUah.value = item['uah'];
-                   this.inputUsd.value = item['usd'];
-               }
+            if (result.length > 0) {
+
+                const spanLastDiff = this.main.querySelector('span[data-mf-elem="last_date_difference"]');
+                for (const item of result) {
+                    this.balanceeUpdate = item['id'];
+                    this.inputUah.value = item['uah'];
+                    this.inputUsd.value = item['usd'];
+                    this.differenceSpan.innerHTML = item['uah'];
+
+                    if (item['last_check'] !== null) {
+                        const lastCheck = DateWorker.formatDate(item['last_check']);
+                        const lastCheckDayName = DateWorker.getNameDayOfWeek(lastCheck);
+                        spanLastDiff.innerHTML = `${lastCheck} (${lastCheckDayName}) - ${item['difference']} uah`;
+                    }
+                }
            }
         });
     }
@@ -263,5 +269,13 @@ class DataWorker {
         }
 
         this.differenceSpan.innerHTML = `${Number(balanceInput.value) - sumCheck}`;
+    }
+
+    saveDateDifference() {
+        const difference = this.main.querySelector('span[data-mf-elem="difference"]');
+
+        this.dh.updateDifference(this.balanceeUpdate, Number(difference.innerText)).then(() => {
+            location.reload();
+        });
     }
 }

@@ -3,18 +3,27 @@ class DataHandler {
         this.auth = auth;
     }
 
-    async addRecord(sum, type, category = null, comment = null) {
+    async getAuth() {
         let accessToken = this.auth.getCookie('access_token');
         const tokenType = this.auth.getCookie('token_type') || 'Bearer';
         const userId = this.auth.getCookie('u_id');
 
         if (!accessToken || this.auth.isTokenExpired()) {
             accessToken = await this.auth.refreshAccessToken();
+
             if (!accessToken) {
-                console.error('Failed to refresh token, cannot proceed');
-                return false;
+                alert('Failed to refresh token, cannot proceed');
+                // location.reload();
+            } else {
+                alert('Access token updated');
             }
         }
+
+        return {'tokenType': tokenType, 'accessToken': accessToken, 'userId': userId};
+    }
+
+    async addRecord(sum, type, category = null, comment = null) {
+        const {tokenType, accessToken, userId} = await this.getAuth();
 
         try {
             const response = await fetch(Dictionary.supabaseUrl, {
@@ -48,22 +57,14 @@ class DataHandler {
     }
 
     async getRecords(where = '') {
-        let accessToken = this.auth.getCookie('access_token');
-        const tokenType = this.auth.getCookie('token_type') || 'Bearer';
-        const userId = this.auth.getCookie('u_id');
+        const {tokenType, accessToken, userId} = await this.getAuth();
+
         let whereUrl = `&user_id=eq.${encodeURIComponent(userId)}`;
 
         if (where) {
             whereUrl = `&${where}&user_id=eq.${encodeURIComponent(userId)}`;
         }
 
-        if (!accessToken || this.auth.isTokenExpired()) {
-            accessToken = await this.auth.refreshAccessToken();
-            if (!accessToken) {
-                console.error('Failed to refresh token, cannot proceed');
-                return false;
-            }
-        }
         // console.log(Dictionary.supabaseUrl + '?select=*' + whereUrl);
         const response = await fetch(Dictionary.supabaseUrl + '?select=*' + whereUrl, {
             method: 'GET',
@@ -84,17 +85,7 @@ class DataHandler {
     }
 
     async getBalance() {
-        let accessToken = this.auth.getCookie('access_token');
-        const tokenType = this.auth.getCookie('token_type') || 'Bearer';
-        const userId = this.auth.getCookie('u_id');
-
-        if (!accessToken || this.auth.isTokenExpired()) {
-            accessToken = await this.auth.refreshAccessToken();
-            if (!accessToken) {
-                console.error('Failed to refresh token, cannot proceed');
-                return false;
-            }
-        }
+        const {tokenType, accessToken, userId} = await this.getAuth();
 
         const response = await fetch(Dictionary.balanceUrl +
             `?select=*&user_id=eq.${encodeURIComponent(userId)}`, {
@@ -116,17 +107,7 @@ class DataHandler {
     }
 
     async addBalance(sumUah, sumUsd) {
-        let accessToken = this.auth.getCookie('access_token');
-        const tokenType = this.auth.getCookie('token_type') || 'Bearer';
-        const userId = this.auth.getCookie('u_id');
-
-        if (!accessToken || this.auth.isTokenExpired()) {
-            accessToken = await this.auth.refreshAccessToken();
-            if (!accessToken) {
-                console.error('Failed to refresh token, cannot proceed');
-                return false;
-            }
-        }
+        const {tokenType, accessToken, userId} = await this.getAuth();
 
         try {
             const response = await fetch(Dictionary.balanceUrl, {
@@ -159,17 +140,7 @@ class DataHandler {
     }
 
     async updateBalance(id, sumUah, sumUsd) {
-        let accessToken = this.auth.getCookie('access_token');
-        const tokenType = this.auth.getCookie('token_type') || 'Bearer';
-        const userId = this.auth.getCookie('u_id');
-
-        if (!accessToken || this.auth.isTokenExpired()) {
-            accessToken = await this.auth.refreshAccessToken();
-            if (!accessToken) {
-                console.error('Failed to refresh token, cannot proceed');
-                return false;
-            }
-        }
+        const {tokenType, accessToken, userId} = await this.getAuth();
 
         try {
             const response = await fetch(`${Dictionary.balanceUrl}?id=eq.${id}`, {
@@ -185,6 +156,32 @@ class DataHandler {
                     uah: sumUah,
                     usd: sumUsd,
                     updated_at: new Date().toISOString()
+                })
+            });
+
+            return response.ok;
+        } catch (error) {
+            console.error('Error updating record:', error);
+            return false;
+        }
+    }
+
+    async updateDifference(id, difference) {
+        const {tokenType, accessToken, userId} = await this.getAuth();
+
+        try {
+            const response = await fetch(`${Dictionary.balanceUrl}?id=eq.${id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `${tokenType} ${accessToken}`,
+                    'Content-Type': 'application/json',
+                    'apikey': Dictionary.anonTocken,
+                    'Prefer': 'return=minimal'
+                },
+                body: JSON.stringify({
+                    user_id: userId,
+                    difference: difference,
+                    last_check: new Date().toISOString()
                 })
             });
 

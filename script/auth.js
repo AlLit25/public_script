@@ -45,13 +45,13 @@ class Auth {
 
     async refreshAccessToken() {
         const refreshToken = this.getCookie('refresh_token');
+
         if (!refreshToken) {
-            console.error('No refresh token found');
             return null;
         }
 
         try {
-            const response = await fetch(`https://${Dictionary.supabaseAuth}/auth/v1/token?grant_type=refresh_token`, {
+            const response = await fetch(`${Dictionary.supabaseAuth}/auth/v1/token?grant_type=refresh_token`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -61,7 +61,7 @@ class Auth {
             });
 
             if (!response.ok) {
-                console.error(`Failed to refresh token: ${response.status}`);
+                alert(`Failed to refresh token: ${response.status}`);
             }
 
             const {access_token, expires_at, refresh_token} = await response.json();

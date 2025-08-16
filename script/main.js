@@ -61,12 +61,12 @@ class Main {
                 case 'auth':
                     this.auth.auth();
                     break;
-                case 'menu':
                 case 'expense':
                 case 'income':
                     this.activeBlock(elem.dataset.mfClick);
                     nextCheck = false;
                     break;
+                case 'menu':
                 case 'balance':
                     this.activeBlock(elem.dataset.mfClick);
                     this.dw.getBalance();
@@ -94,6 +94,9 @@ class Main {
                 case 'balance_remove':
                     this.dw.dropElem(elem);
                     this.dw.setDifference();
+                    break;
+                case 'save_difference':
+                    this.dw.saveDateDifference();
                     break;
             }
 
