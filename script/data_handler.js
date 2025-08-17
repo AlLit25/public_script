@@ -86,7 +86,7 @@ class DataHandler {
         });
 
         if (!response.ok) {
-            Notification.showAlert('Ошибка:'+response.statusText);
+            Notification.showAlert('Ошибка:'+response);
             return;
         }
 
@@ -109,7 +109,7 @@ class DataHandler {
             });
 
             if (!response.ok) {
-                Notification.showAlert('Ошибка:', response.statusText);
+                Notification.showAlert('Ошибка:', response);
                 return;
             }
 
