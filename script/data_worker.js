@@ -148,7 +148,7 @@ class DataWorker {
         ]);
 
         if (!Array.isArray(dataRaw)) {
-            console.error('Ошибка: dataRaw должен быть массивом');
+            // console.error('Ошибка: dataRaw должен быть массивом');
             return {income: {}, expense: {}};
         }
 
@@ -186,22 +186,24 @@ class DataWorker {
 
     getBalance() {
         this.dh.getBalance().then(result => {
-            if (result.length > 0) {
+            if (Main.isset(result)) {
+                if (result.length > 0) {
 
-                const spanLastDiff = this.main.querySelector('span[data-mf-elem="last_date_difference"]');
-                for (const item of result) {
-                    this.balanceeUpdate = item['id'];
-                    this.inputUah.value = item['uah'];
-                    this.inputUsd.value = item['usd'];
-                    this.differenceSpan.innerHTML = item['uah'];
+                    const spanLastDiff = this.main.querySelector('span[data-mf-elem="last_date_difference"]');
+                    for (const item of result) {
+                        this.balanceeUpdate = item['id'];
+                        this.inputUah.value = item['uah'];
+                        this.inputUsd.value = item['usd'];
+                        this.differenceSpan.innerHTML = item['uah'];
 
-                    if (item['last_check'] !== null) {
-                        const lastCheck = DateWorker.formatDate(item['last_check']);
-                        const lastCheckDayName = DateWorker.getNameDayOfWeek(lastCheck);
-                        spanLastDiff.innerHTML = `${lastCheck} (${lastCheckDayName}) - ${item['difference']} uah`;
+                        if (item['last_check'] !== null) {
+                            const lastCheck = DateWorker.formatDate(item['last_check']);
+                            const lastCheckDayName = DateWorker.getNameDayOfWeek(lastCheck);
+                            spanLastDiff.innerHTML = `${lastCheck} (${lastCheckDayName}) - ${item['difference']} uah`;
+                        }
                     }
                 }
-           }
+            }
         });
     }
 

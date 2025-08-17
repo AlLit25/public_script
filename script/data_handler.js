@@ -12,10 +12,10 @@ class DataHandler {
             accessToken = await this.auth.refreshAccessToken();
 
             if (!accessToken) {
-                alert('Failed to refresh token, cannot proceed');
+                Notification.show('token_false');
                 // location.reload();
             } else {
-                alert('Access token updated');
+                Notification.show('token_true');
             }
         }
 
@@ -45,13 +45,13 @@ class DataHandler {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                console.error('Supabase error:', response.status, errorData);
+                // console.error('Supabase error:', response.status, errorData);
                 return false;
             }
 
             return true;
         } catch (error) {
-            console.error('Error adding record:', error);
+            // console.error('Error adding record:', error);
             return false;
         }
     }
@@ -77,7 +77,7 @@ class DataHandler {
         });
 
         if (!response.ok) {
-            console.error('Ошибка:', response.statusText);
+            // console.error('Ошибка:', response.statusText);
             return;
         }
 
@@ -87,23 +87,27 @@ class DataHandler {
     async getBalance() {
         const {tokenType, accessToken, userId} = await this.getAuth();
 
-        const response = await fetch(Dictionary.balanceUrl +
-            `?select=*&user_id=eq.${encodeURIComponent(userId)}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `${tokenType} ${accessToken}`,
-                'Content-Type': 'application/json',
-                'apikey': Dictionary.anonTocken,
-                'Accept': 'application/json'
-            }
-        });
+        if (accessToken !== null) {
+            const response = await fetch(Dictionary.balanceUrl +
+                `?select=*&user_id=eq.${encodeURIComponent(userId)}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `${tokenType} ${accessToken}`,
+                    'Content-Type': 'application/json',
+                    'apikey': Dictionary.anonTocken,
+                    'Accept': 'application/json'
+                }
+            });
 
-        if (!response.ok) {
-            console.error('Ошибка:', response.statusText);
-            return;
+            if (!response.ok) {
+                // console.error('Ошибка:', response.statusText);
+                return;
+            }
+
+            return await response.json();
         }
 
-        return await response.json();
+        return null;
     }
 
     async addBalance(sumUah, sumUsd) {
@@ -128,13 +132,13 @@ class DataHandler {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                console.error('Supabase error:', response.status, errorData);
+                // console.error('Supabase error:', response.status, errorData);
                 return false;
             }
 
             return true;
         } catch (error) {
-            console.error('Error adding record:', error);
+            // console.error('Error adding record:', error);
             return false;
         }
     }
@@ -161,7 +165,7 @@ class DataHandler {
 
             return response.ok;
         } catch (error) {
-            console.error('Error updating record:', error);
+            // console.error('Error updating record:', error);
             return false;
         }
     }
@@ -187,7 +191,7 @@ class DataHandler {
 
             return response.ok;
         } catch (error) {
-            console.error('Error updating record:', error);
+            // console.error('Error updating record:', error);
             return false;
         }
     }
