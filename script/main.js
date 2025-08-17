@@ -12,6 +12,7 @@ class Main {
             this.auth = new Auth(this.main);
             this.dw = new DataWorker(this, this.main, this.auth, this.sphObj);
             this.getBlockList();
+
             this.main.addEventListener('click', event => this.clickHandler(event.target));
             this.main.addEventListener('input', event => this.inputHandler(event.target));
             this.dw.setCategory();

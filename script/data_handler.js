@@ -13,13 +13,22 @@ class DataHandler {
 
             if (!accessToken) {
                 Notification.show('token_false');
-                // location.reload();
+                this.clearCookie();
             } else {
                 Notification.show('token_true');
             }
         }
 
         return {'tokenType': tokenType, 'accessToken': accessToken, 'userId': userId};
+    }
+
+    clearCookie() {
+        const cookies = ['access_token', 'email', 'expires_at', 'refresh_token', 'role', 'token_type', 'u_id'];
+
+        for (const name of cookies) {
+            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+        }
+
     }
 
     async addRecord(sum, type, category = null, comment = null) {
@@ -45,13 +54,13 @@ class DataHandler {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                // console.error('Supabase error:', response.status, errorData);
+                Notification.showAlert('Supabase error:'+response.status);
                 return false;
             }
 
             return true;
         } catch (error) {
-            // console.error('Error adding record:', error);
+            Notification.showAlert('Error adding record: '+error);
             return false;
         }
     }
@@ -77,7 +86,7 @@ class DataHandler {
         });
 
         if (!response.ok) {
-            // console.error('Ошибка:', response.statusText);
+            Notification.showAlert('Ошибка:'+response.statusText);
             return;
         }
 
@@ -100,7 +109,7 @@ class DataHandler {
             });
 
             if (!response.ok) {
-                // console.error('Ошибка:', response.statusText);
+                Notification.showAlert('Ошибка:', response.statusText);
                 return;
             }
 
@@ -132,13 +141,13 @@ class DataHandler {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                // console.error('Supabase error:', response.status, errorData);
+                Notification.showAlert('Supabase error:', response.status, errorData);
                 return false;
             }
 
             return true;
         } catch (error) {
-            // console.error('Error adding record:', error);
+            Notification.showAlert('Error adding record:', error);
             return false;
         }
     }
@@ -165,7 +174,7 @@ class DataHandler {
 
             return response.ok;
         } catch (error) {
-            // console.error('Error updating record:', error);
+            Notification.showAlert('Error updating record:', error);
             return false;
         }
     }
@@ -191,7 +200,7 @@ class DataHandler {
 
             return response.ok;
         } catch (error) {
-            // console.error('Error updating record:', error);
+            Notification.showAlert('Error updating record:', error);
             return false;
         }
     }

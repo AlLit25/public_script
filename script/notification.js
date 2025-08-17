@@ -30,4 +30,8 @@ class Notification {
 
         return blocksList;
     }
+
+    static showAlert(message) {
+        alert(message);
+    }
 }
