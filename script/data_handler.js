@@ -91,7 +91,7 @@ class DataHandler {
         });
 
         if (!response.ok) {
-            Notification.showAlert('Ошибка:'+response);
+            Notification.showAlert('Ошибка getRecords:'+response);
             return;
         }
 
@@ -114,7 +114,7 @@ class DataHandler {
             });
 
             if (!response.ok) {
-                Notification.showAlert('Ошибка:', response);
+                Notification.showAlert('Ошибка getBalance:'+response);
                 return;
             }
 

@@ -30,8 +30,7 @@ class DataWorker {
         const incomeBlock = this.main.querySelector('div[data-mf-block="income"]');
         const sumInput = incomeBlock.querySelector('input[data-mf-input="income"]');
         const dateInput = incomeBlock.querySelector('input[data-mf-input="date_income"]');
-        console.log(dateInput);
-        console.log(dateInput.value);
+
         if (sumInput.value.length > 0) {
             this.dh.addRecord(sumInput.value, 'income', dateInput.value).then(result => {
                 if (result) {
