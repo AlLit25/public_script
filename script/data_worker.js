@@ -29,9 +29,11 @@ class DataWorker {
     addIncome() {
         const incomeBlock = this.main.querySelector('div[data-mf-block="income"]');
         const sumInput = incomeBlock.querySelector('input[data-mf-input="income"]');
-
+        const dateInput = incomeBlock.querySelector('input[data-mf-input="date_income"]');
+        console.log(dateInput);
+        console.log(dateInput.value);
         if (sumInput.value.length > 0) {
-            this.dh.addRecord(sumInput.value, 'income').then(result => {
+            this.dh.addRecord(sumInput.value, 'income', dateInput.value).then(result => {
                 if (result) {
                     this.updateUahBalance(sumInput.value, 'income');
                     sumInput.value = '';
@@ -45,17 +47,19 @@ class DataWorker {
     addExpense() {
         const expenseBlock = this.main.querySelector('div[data-mf-block="expense"]');
         const expenseCat = expenseBlock.querySelector('select[data-mf-input="expense_category"]');
+        const expenseDate = expenseBlock.querySelector('input[data-mf-input="date_expense"]');
         const expenseSum = expenseBlock.querySelector('input[data-mf-input="expense_sum"]');
         const expenseCom = expenseBlock.querySelector('textarea[data-mf-input="expense_comment"]');
 
         if (expenseSum.value.length > 0 && expenseCat.value.length) {
-            this.dh.addRecord(expenseSum.value, 'expense', expenseCat.value, expenseCom.value).then(result => {
-                if (result) {
-                    this.updateUahBalance(expenseSum.value, 'expense');
-                    expenseSum.value = '';
-                    expenseCom.value = '';
-                }
-            });
+            this.dh.addRecord(expenseSum.value, 'expense', expenseDate.value, expenseCat.value, expenseCom.value)
+                .then(result => {
+                    if (result) {
+                        this.updateUahBalance(expenseSum.value, 'expense');
+                        expenseSum.value = '';
+                        expenseCom.value = '';
+                    }
+                });
         } else {
             alert('Обовʼязково необхідно вказати суму та категорію');
         }

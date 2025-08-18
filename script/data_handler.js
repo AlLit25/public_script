@@ -31,8 +31,13 @@ class DataHandler {
 
     }
 
-    async addRecord(sum, type, category = null, comment = null) {
+    async addRecord(sum, type, date = null, category = null, comment = null) {
         const {tokenType, accessToken, userId} = await this.getAuth();
+        let dbDate = new Date().toISOString();
+
+        if (date !== null) {
+            dbDate = new Date(date).toISOString();
+        }
 
         try {
             const response = await fetch(Dictionary.supabaseUrl, {
@@ -47,7 +52,7 @@ class DataHandler {
                     type: type,
                     category: category,
                     comment: comment,
-                    created_at: new Date().toISOString(),
+                    created_at: dbDate,
                     user_id: userId
                 })
             });
