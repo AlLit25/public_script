@@ -60,12 +60,14 @@ class DataHandler {
             if (!response.ok) {
                 const errorData = await response.json();
                 Notification.showAlert('Supabase error:'+response.status);
+                this.clearCookie();
                 return false;
             }
 
             return true;
         } catch (error) {
             Notification.showAlert('Error adding record: '+error);
+            this.clearCookie();
             return false;
         }
     }
@@ -92,6 +94,7 @@ class DataHandler {
 
         if (!response.ok) {
             Notification.showAlert('Ошибка getRecords:'+response);
+            this.clearCookie();
             return;
         }
 
@@ -114,7 +117,8 @@ class DataHandler {
             });
 
             if (!response.ok) {
-                Notification.showAlert('Ошибка getBalance:'+response);
+                Notification.showAlert('Ошибка: getBalance');
+                this.clearCookie();
                 return;
             }
 
