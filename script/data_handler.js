@@ -16,6 +16,7 @@ class DataHandler {
                 this.clearCookie();
             } else {
                 Notification.show('token_true');
+                location.reload();
             }
         }
 

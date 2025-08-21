@@ -74,10 +74,12 @@ class Main {
                     nextCheck = false;
                     break;
                 case 'add_income':
+                    // добавить дату по умолчанию
                     this.dw.addIncome();
                     nextCheck = false;
                     break;
                 case 'expense_add':
+                    // добавить дату по умолчанию
                     this.dw.addExpense();
                     nextCheck = false;
                     break;
