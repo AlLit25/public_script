@@ -70,7 +70,6 @@ class Auth {
 
             return access_token;
         } catch (error) {
-            // console.error('Error refreshing token:', error);
             return null;
         }
     }
@@ -88,16 +87,11 @@ class Auth {
 
             const data = await response.json();
 
-            if (!response.ok) {
-                // console.error('Помилка під час входу');
-            }
-
             return {
                 user: data.user,
                 session: data
             };
         } catch (error) {
-            // console.error('помилка входу:', error.message);
             return null;
         }
     }

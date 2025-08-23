@@ -64,6 +64,7 @@ class Main {
                     break;
                 case 'expense':
                 case 'income':
+                    DataWorker.setDate(elem.dataset.mfClick);
                     this.activeBlock(elem.dataset.mfClick);
                     nextCheck = false;
                     break;
@@ -74,18 +75,17 @@ class Main {
                     nextCheck = false;
                     break;
                 case 'add_income':
-                    // добавить дату по умолчанию
                     this.dw.addIncome();
                     nextCheck = false;
                     break;
                 case 'expense_add':
-                    // добавить дату по умолчанию
                     this.dw.addExpense();
                     nextCheck = false;
                     break;
                 case 'statistic':
                     this.activeBlock(elem.dataset.mfClick);
-                    this.dw.getStatistic();
+                    this.dw.getStatistic('s_today');
+                    this.sphObj.activeTab('s_today');
                     nextCheck = false;
                     break;
                 case 'save_balance':

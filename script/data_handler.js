@@ -16,8 +16,8 @@ class DataHandler {
                 this.clearCookie();
             } else {
                 Notification.show('token_true');
-                location.reload();
             }
+            location.reload();
         }
 
         return {'tokenType': tokenType, 'accessToken': accessToken, 'userId': userId};
@@ -29,7 +29,7 @@ class DataHandler {
         for (const name of cookies) {
             document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
         }
-
+        location.reload();
     }
 
     async addRecord(sum, type, date = null, category = null, comment = null) {
@@ -82,7 +82,6 @@ class DataHandler {
             whereUrl = `&${where}&user_id=eq.${encodeURIComponent(userId)}`;
         }
 
-        // console.log(Dictionary.supabaseUrl + '?select=*' + whereUrl);
         const response = await fetch(Dictionary.supabaseUrl + '?select=*' + whereUrl, {
             method: 'GET',
             headers: {
@@ -118,7 +117,7 @@ class DataHandler {
             });
 
             if (!response.ok) {
-                Notification.showAlert('Ошибка: getBalance');
+                // Notification.showAlert('Ошибка: getBalance');
                 this.clearCookie();
                 return;
             }

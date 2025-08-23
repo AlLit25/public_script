@@ -10,8 +10,6 @@ class DataWorker {
         this.inputUsd = balanceBlock.querySelector('input[data-mf-elem="balance_usd"]');
         this.differenceSpan = balanceBlock.querySelector('span[data-mf-elem="difference"]');
         this.balanceeUpdate = 0;
-
-        this.getBalance();
     }
 
     setCategory() {
@@ -40,6 +38,19 @@ class DataWorker {
             });
         } else {
             alert('Обовʼязково необхідно вказати суму');
+        }
+    }
+
+    static setDate(codeInput) {
+        const dateInput = document.querySelector(`input[data-mf-input="date_${codeInput}"]`);
+
+        if (dateInput.value.length === 0) {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+
+            dateInput.value = `${year}-${month}-${day}`;
         }
     }
 
@@ -151,7 +162,6 @@ class DataWorker {
         ]);
 
         if (!Array.isArray(dataRaw)) {
-            // console.error('Ошибка: dataRaw должен быть массивом');
             return {income: {}, expense: {}};
         }
 
